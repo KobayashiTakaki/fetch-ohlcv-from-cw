@@ -1,3 +1,4 @@
+import os
 from os import path
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urljoin
@@ -17,6 +18,7 @@ def main():
     time_to = config["time_to"]
     time_from_current = time_from
     time_to_current = time_from_current + FETCH_CHUNK_PERIOD
+    init_output_file(output_path)
 
     while time_to_current < time_to + FETCH_CHUNK_PERIOD:
         if time_to_current + FETCH_CHUNK_PERIOD > time_to:
@@ -58,6 +60,24 @@ def get_config():
         "time_from": time_from,
         "time_to": time_to,
     }
+
+def init_output_file(output_path):
+    if os.path.isfile(output_path):
+        os.remove(output_path)
+    with open(output_path, mode='w') as f:
+        columns = [
+            "close_time",
+            "open_price",
+            "high_price",
+            "low_price",
+            "close_price",
+            "volume",
+        ]
+        for i, column in enumerate(columns):
+            f.write(column)
+            if i != len(columns) - 1:
+                f.write(',')
+        f.write('\n')
 
 if __name__ == "__main__":
     main()
